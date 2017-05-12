@@ -23,7 +23,7 @@
 	</div>
 </div>
 <div class="container">
-    <div class="row">
+    <div class="row" style="font-size: 1.2em">
       <?php if ($informations) { ?>
       <div class="col-sm-3">
         <h3><?php echo $text_information; ?></h3>
@@ -32,22 +32,24 @@
           <li><a href="<?php echo $information['href']; ?>"><?php echo $information['title']; ?></a></li>
           <?php } ?>
         </ul>
+      </div>
+      <?php } ?>
+      <div class="col-sm-3">
 		<h3><?php echo $text_service; ?></h3>
         <ul class="list-unstyled">
           <li><a href="<?php echo $contact; ?>"><?php echo $text_contact; ?></a></li>
           <li><a href="<?php echo $return; ?>"><?php echo $text_return; ?></a></li>
           <li><a href="<?php echo $sitemap; ?>"><?php echo $text_sitemap; ?></a></li>
-        </ul>
-      </div>
-      <?php } ?>
-      <div class="col-sm-3">
-        <h3><?php echo $text_extra; ?></h3>
+        </ul>	  
+<!--
+	  <h3><?php echo $text_extra; ?></h3>
         <ul class="list-unstyled">
           <li><a href="<?php echo $manufacturer; ?>"><?php echo $text_manufacturer; ?></a></li>
           <li><a href="<?php echo $voucher; ?>"><?php echo $text_voucher; ?></a></li>
           <li><a href="<?php echo $affiliate; ?>"><?php echo $text_affiliate; ?></a></li>
           <li><a href="<?php echo $special; ?>"><?php echo $text_special; ?></a></li>
         </ul>
+-->		
 		<?php if($config_social_footer) { ?>
 		<h3><?php echo $text_social_link; ?></h3>
         <ul class="list-unstyled">			
@@ -58,7 +60,7 @@
 				</li>			
         </ul>
 		<?php } ?>
-      </div>
+      </div>	  
       <div class="col-sm-3">
         <h3><?php echo $text_account; ?></h3>
         <ul class="list-unstyled">
@@ -111,6 +113,61 @@
 	</div>
 </div>
 </div>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function (d, w, c) {
+        (w[c] = w[c] || []).push(function() {
+            try {
+                w.yaCounter41385769 = new Ya.Metrika({
+                    id:41385769,
+                    clickmap:true,
+                    trackLinks:true,
+                    accurateTrackBounce:true,
+                    webvisor:true,
+                    ecommerce:"dataLayer"
+                });
+            } catch(e) { }
+        });
+
+        var n = d.getElementsByTagName("script")[0],
+            s = d.createElement("script"),
+            f = function () { n.parentNode.insertBefore(s, n); };
+        s.type = "text/javascript";
+        s.async = true;
+        s.src = "https://mc.yandex.ru/metrika/watch.js";
+
+        if (w.opera == "[object Opera]") {
+            d.addEventListener("DOMContentLoaded", f, false);
+        } else { f(); }
+    })(document, window, "yandex_metrika_callbacks");
+</script>
+<!-- /Yandex.Metrika counter -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-88474524-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<!-- Facebook Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '773961262755476'); // Insert your pixel ID here.
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=773961262755476&ev=PageView&noscript=1"
+/></noscript>
+<!-- DO NOT MODIFY -->
+<!-- End Facebook Pixel Code -->
+<script type="text/javascript">(window.Image ? (new Image()) : document.createElement('img')).src = location.protocol + '//vk.com/rtrg?r=AdV3uMieJeI0QsutrJ9j9R7tyaxiV9I4FcxOZhDr6N5ERa7kMtkF0vIXoOx8*Szr0Wia/9L4uuaPUZxzPmtEEL5pZiE/zugv8gClph6v1X2CuC0FhEkQQgG2TrWHKstXABpxfXhkcL7oJN2zSqsz4gNAAvnXwUQiV8poiL7XwiI-&pixel_id=1000062988';</script>
 </footer>
 <script type="text/javascript"><!--
 	function price_format(n){ 	

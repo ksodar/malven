@@ -38,7 +38,7 @@ $main_menu = $config->get('config_main_menu_selection');
     <?php } else { ?>
     <?php $class = 'col-sm-12'; ?>
     <?php } ?>
-    <div id="content" class="<?php echo $class; ?>">
+    <div id="content" class="<?php echo $class; ?>" style="font-size: 1.2em">
   <?php echo $content_top; ?>
       <h1><?php echo $heading_title; ?></h1>
       <?php echo $description; ?><?php echo $content_bottom; ?></div>
