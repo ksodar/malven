@@ -27,7 +27,7 @@
 				<div id="ns-left-block" class="col-lg-2 col-md-3">
 					<div class="logo-theme">
 						<img src="view/image/newstore.png" />
-						<div class="version-theme"><span>v.2.5.3</span></div>
+						<div class="version-theme"><span>v.2.5.5</span></div>
 					</div>
 					<ul class="nav nav-pills nav-stacked">
 						<li class="active"><a data-toggle="tab" href="#tab-general-ns-setting"><?php echo $tab_general_ns_setting;?></a></li>

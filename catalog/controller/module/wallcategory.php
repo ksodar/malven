@@ -5,7 +5,10 @@ class ControllerModuleWallcategory extends Controller {
 		$this->load->model('tool/image');
 		$this->load->model('catalog/category');
 		$limit_sub_category = $setting['limit'];
-		
+	$wall_cache = $this->cache->get('wallcategory.'. $module .'.' . (int)$this->config->get('config_language_id').'.'. (int)$this->config->get('config_store_id'));
+	if (!empty($wall_cache)) {
+		$data['categories'] = $wall_cache;
+	} else {
 		if (isset($setting['wall_category'])) {
 			$categories = $setting['wall_category'];
 		} else {
@@ -29,10 +32,7 @@ class ControllerModuleWallcategory extends Controller {
 				$subcategories = array_slice($subcategories, 0, $limit_sub_category);
 			
 				foreach($subcategories as $subcategory){					
-					$path = $this->getCategoryPath($subcategory['category_id']);	
-					if($path){
-						$path = implode("_" , $path);
-					}		
+					$path = $this->getCategoryPath($subcategory['category_id']);		
 					$data['subcategories'][] = array(
 						'category_id' 	=> $subcategory['category_id'],
 						'name'        	=> $subcategory['name'],
@@ -46,9 +46,6 @@ class ControllerModuleWallcategory extends Controller {
 				$image_category = $this->model_tool_image->resize('placeholder.png', 150, 150);
 			}	
 			$path = $this->getCategoryPath($category['category']);	
-			if($path){
-				$path = implode("_" , $path);
-			}
 			$data['categories'][] = array(
 				'subcategories' => $data['subcategories'],
 				'category_id' => $category_info['category_id'],
@@ -57,8 +54,17 @@ class ControllerModuleWallcategory extends Controller {
 				'image' 	  => $image_category,				
 			);			
                
-        }	
+        }
+		$wall_cache = $data['categories'];	
+		$this->cache->set('wallcategory.'. $module .'.' . (int)$this->config->get('config_language_id').'.'. (int)$this->config->get('config_store_id'), $wall_cache);	
+	}
+	
+	
 		$this->load->model('catalog/manufacturer');
+	$manufacturer_cache = $this->cache->get('manufacturer.'. $module .'.' . (int)$this->config->get('config_language_id').'.'. (int)$this->config->get('config_store_id'));
+	if (!empty($manufacturer_cache)) {
+		$data['manufacturers'] = $manufacturer_cache;
+	} else {
 		if (isset($setting['wall_manufactures'])) {
 			$wall_manufactures = $setting['wall_manufactures'];
 		} else {
@@ -66,9 +72,9 @@ class ControllerModuleWallcategory extends Controller {
 		}
 		if (!empty($wall_manufactures)){
 			foreach ($wall_manufactures as $key => $value) {
-				$sort_order[$key] = $value['sort_order'];
+				$sort_order_manufactures[$key] = $value['sort_order'];
 			} 
-			array_multisort($sort_order, SORT_ASC, $wall_manufactures);
+			array_multisort($sort_order_manufactures, SORT_ASC, $wall_manufactures);
 		}
 		$data['manufacturers'] = array();
 
@@ -86,6 +92,9 @@ class ControllerModuleWallcategory extends Controller {
 				}
 			}
 		}
+		$manufacturer_cache = $data['manufacturers'];	
+		$this->cache->set('manufacturer.'. $module .'.' . (int)$this->config->get('config_language_id').'.'. (int)$this->config->get('config_store_id'), $manufacturer_cache);	
+	}
 		$data['module'] = $module++;
 		$data['lang_id'] = $this->config->get('config_language_id');
 		$data['heading_title'] = $setting['title_name'];	
@@ -96,16 +105,14 @@ class ControllerModuleWallcategory extends Controller {
 		}
 	}
 	public function getCategoryPath($category_id){
-		$query = $this->db->query("SELECT path_id FROM " . DB_PREFIX . "category_path WHERE category_id='". (int)$category_id ."' ORDER BY LEVEL");	
-		if($query->rows){
-			$result=array();
-			foreach($query->rows as $row){ 	
-				$result[]=$row['path_id'];
-			}
-			return $result;
-		} else {
-			return false;
+		$path = '';
+		$category = $this->db->query("SELECT c.`category_id`,c.`parent_id` FROM " . DB_PREFIX . "category c WHERE c.`category_id` = " .(int)$category_id."");
+		if($category->row['parent_id'] != 0){
+			$path .= $this->getCategoryPath($category->row['parent_id']) . '_';
 		}
+		$path .= $category->row['category_id'];
+ 
+		return $path;
 	}
 	 
 }

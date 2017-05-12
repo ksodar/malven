@@ -1,11 +1,20 @@
 <?php echo $header; ?>
 <div class="container">
-  <ul class="breadcrumb" itemscope itemtype="http://data-vocabulary.org/Breadcrumb" >
+  <ul class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
 		<?php foreach ($breadcrumbs as $i=> $breadcrumb) { ?>
 			<?php if($i+1<count($breadcrumbs)){ ?>
-				<li><a itemprop="url" href="<?php echo $breadcrumb['href']; ?>"><span itemprop="title"><?php echo $breadcrumb['text']; ?></span></a></li>
+				<li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+					<a itemprop="item" href="<?php echo $breadcrumb['href']; ?>">
+					  <span itemprop="name"><?php echo $breadcrumb['text']; ?></span>
+					</a>
+					<meta itemprop="position" content="<?php echo $i+1; ?>" />
+				  </li>
 			<?php } else { ?>
-				<li><?php echo $breadcrumb['text']; ?></li>
+				<li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+				<link itemprop="item" href="<?php echo $breadcrumb['href']; ?>">
+				<span itemprop="name"><?php echo $breadcrumb['text']; ?></span>
+				<meta itemprop="position" content="<?php echo $i+1; ?>" />
+				</li>
 			<?php } ?>
 		<?php } ?>
 	</ul>

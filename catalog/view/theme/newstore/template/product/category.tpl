@@ -1,11 +1,20 @@
 <?php echo $header; ?>
 <div class="container">
-	<ul class="breadcrumb <?php if (($menu_open_category =='1') && ($main_menu =='1') && ($column_left)) { ?>col-md-offset-3 col-lg-offset-3<?php } ?>" itemscope itemtype="http://data-vocabulary.org/Breadcrumb" >
+	<ul class="breadcrumb <?php if (($menu_open_category =='1') && ($main_menu =='1') && ($column_left)) { ?>col-md-offset-3 col-lg-offset-3<?php } ?>" itemscope itemtype="https://schema.org/BreadcrumbList">
 		<?php foreach ($breadcrumbs as $i=> $breadcrumb) { ?>
 			<?php if($i+1<count($breadcrumbs)){ ?>
-				<li><a itemprop="url" href="<?php echo $breadcrumb['href']; ?>"><span itemprop="title"><?php echo $breadcrumb['text']; ?></span></a></li>
+				<li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+					<a itemprop="item" href="<?php echo $breadcrumb['href']; ?>">
+					  <span itemprop="name"><?php echo $breadcrumb['text']; ?></span>
+					</a>
+					<meta itemprop="position" content="<?php echo $i+1; ?>" />
+				  </li>
 			<?php } else { ?>
-				<li><?php echo $breadcrumb['text']; ?></li>
+				<li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+				<link itemprop="item" href="<?php echo $breadcrumb['href']; ?>">
+				<span itemprop="name"><?php echo $breadcrumb['text']; ?></span>
+				<meta itemprop="position" content="<?php echo $i+1; ?>" />
+				</li>
 			<?php } ?>
 		<?php } ?>
 	</ul>
@@ -84,9 +93,9 @@
       <?php } ?>
       <?php if ($products) { ?>
 	  <div class="row">
-		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-xs-center text-sm-center text-md-center text-lg-left  localstorage"style="margin:10px 0px;">
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 text-xs-center text-sm-center text-md-center text-lg-left  localstorage" style="margin:10px 0px;">
 			<div class="btn-group">
-				<div class="btn-group">
+				 <div class="btn-group">
 					 <button type="button" class="btn btn-sort-limit dropdown-toggle" data-toggle="dropdown">
 						<?php echo str_replace(":","",$text_sort); ?>
 						<span class="caret"></span>
@@ -125,8 +134,7 @@
                     <i class="fa fa-arrows-v hidden-md hidden-lg"></i> <span class="hidden-xs hidden-sm hidden-sm hidden-lg"><?php echo $text_limit; ?> </span><?php echo isset($mmr_limit_active) ? $mmr_limit_active : $limits['text']; ?>
                     <span class="caret"></span>
                   </button>
-                </div>				
-				<div class="btn-group"><button type="button" class="btn"><?php echo $results; ?></button></div>
+                </div>
 			</div>
 		</div>
 		 </div> 
@@ -213,7 +221,7 @@
 				<div class="quick-order">
 					<?php if($ns_on_off_module_quick_order =='1') { ?>
 					<?php if($ns_on_off_category_page_fastorder !='0'){ ?>
-					<button class="btn btn-fastorder <?php if (($product['product_quantity'] <= 0) and $disable_fastorder_button){ ?>hidden-quick-order<?php } ?>" type="button" data-toggle="tooltip" onclick="fastorder_open(<?php echo $product['product_id']?>);" >
+					<button class="btn btn-fastorder <?php if (($product['product_quantity'] <= 0) and $disable_fastorder_button){ ?>hidden-quick-order<?php } ?>" type="button" data-toggle="tooltip" onclick="fastorder_open(<?php echo $product['product_id']?>);" title="<?php echo $config_text_open_form_send_order[$lang_id]['config_text_open_form_send_order']; ?>">
 						<?php if($icon_open_form_send_order !=''){ ?>
 							<i style="color:#<?php echo $color_button_open_form_send_order ;?>;" class="<?php echo $icon_open_form_send_order;?> fa-fw"></i>
 						<?php } else { ?>
@@ -235,7 +243,27 @@
 						<?php if ($show_options) { ?>
 							<div id="option_productpage_<?php echo $product['product_id']; ?>" class="option productpage-opt">
 								<?php foreach ($product['options'] as $key => $option) { ?>	
-									<?php if ($option['type'] == 'select' || $option['type'] == 'radio') { ?>
+									<?php if ($option['type'] == 'select'){ ?>
+										<div class="form-group">
+											<label class="control-label" for="input-option<?php echo $option['product_option_id']; ?>">
+												<?php if ($option['required']) { ?><i class="fa fa-exclamation-triangle required" data-toggle="tooltip" data-placement="left" title="<?php echo $required_text_option; ?>"></i><?php } ?>
+												<?php echo $option['name']; ?>
+											</label>
+											<div id="input-option-productpage<?php echo $option['product_option_id']; ?>">
+												<select onchange="recalc_quantity(<?php echo $product['product_id'];?>,<?php echo $product['minimum']; ?>,<?php echo $product['price_no_format'];?>,'<?php echo $product['special_no_format'];?>','.row-price','productpage');" name="option[<?php echo $option['product_option_id']; ?>]" id="input-value-<?php echo $option['product_option_id']; ?>_productpage" class="form-control">
+													<option value=""><?php echo $text_select; ?></option>
+													<?php foreach ($option['product_option_value'] as $option_value) { ?>
+													<option data-option-prefix="<?php echo $option_value['price_prefix']; ?>" data-option-price="<?php echo $option_value['price_value']; ?>" value="<?php echo $option_value['product_option_value_id']; ?>"><?php echo $option_value['name']; ?>
+													<?php if ($option_value['price']) { ?>
+													(<?php echo $option_value['price_prefix']; ?><?php echo $option_value['price']; ?>)
+													<?php } ?>
+													</option>
+													<?php } ?>
+												</select>
+										  </div>
+										</div>
+									<?php } ?>
+									<?php if ($option['type'] == 'radio') { ?>
 									<div class="form-group">
 										<label class="control-label" for="input-option<?php echo $option['product_option_id']; ?>">
 											<?php if ($option['required']) { ?><i class="fa fa-exclamation-triangle required" data-toggle="tooltip" data-placement="left" title="<?php echo $required_text_option; ?>"></i><?php } ?>
@@ -244,7 +272,7 @@
 									  <div id="input-option-productpage<?php echo $option['product_option_id']; ?>">
 										<?php foreach ($option['product_option_value'] as $option_value) { ?>
 										<div class="radio-checbox-options">
-											<input type="radio" name="option[<?php echo $option['product_option_id']; ?>]" value="<?php echo $option_value['product_option_value_id']; ?>" id="input-value-<?php echo $option['product_option_id']; ?>_<?php echo $option_value['product_option_value_id']; ?>_productpage" />
+											<input data-option-prefix="<?php echo $option_value['price_prefix']; ?>" data-option-price="<?php echo $option_value['price_value']; ?>" onchange="recalc_quantity(<?php echo $product['product_id'];?>,<?php echo $product['minimum']; ?>,<?php echo $product['price_no_format'];?>,'<?php echo $product['special_no_format'];?>','.row-price','productpage');" type="radio" name="option[<?php echo $option['product_option_id']; ?>]" value="<?php echo $option_value['product_option_value_id']; ?>" id="input-value-<?php echo $option['product_option_id']; ?>_<?php echo $option_value['product_option_value_id']; ?>_productpage" />
 											<label for="input-value-<?php echo $option['product_option_id']; ?>_<?php echo $option_value['product_option_value_id']; ?>_productpage">
 												<span class="option-name"><?php echo $option_value['name']; ?></span>
 												<?php if ($option_value['price']) { ?>
@@ -265,7 +293,7 @@
 									  <div id="input-option-productpage<?php echo $option['product_option_id']; ?>">
 										<?php foreach ($option['product_option_value'] as $option_value) { ?>
 										<div class="radio-checbox-options">
-										  <input type="checkbox" name="option[<?php echo $option['product_option_id']; ?>][]" value="<?php echo $option_value['product_option_value_id']; ?>" id="input-value-<?php echo $option['product_option_id']; ?>_<?php echo $option_value['product_option_value_id']; ?>_productpage" />
+										  <input data-option-prefix="<?php echo $option_value['price_prefix']; ?>" data-option-price="<?php echo $option_value['price_value']; ?>" onchange="recalc_quantity(<?php echo $product['product_id'];?>,<?php echo $product['minimum']; ?>,<?php echo $product['price_no_format'];?>,'<?php echo $product['special_no_format'];?>','.row-price','productpage');" type="checkbox" name="option[<?php echo $option['product_option_id']; ?>][]" value="<?php echo $option_value['product_option_value_id']; ?>" id="input-value-<?php echo $option['product_option_id']; ?>_<?php echo $option_value['product_option_value_id']; ?>_productpage" />
 											<label for="input-value-<?php echo $option['product_option_id']; ?>_<?php echo $option_value['product_option_value_id']; ?>_productpage">
 											<span class="option-name"><?php echo $option_value['name']; ?></span>
 												<?php if ($option_value['price']) { ?>
@@ -290,7 +318,7 @@
 											<?php foreach ($option['product_option_value'] as $option_value) { ?>
 											<div class="image-radio">
 											  <label>
-												<input type="radio" name="option[<?php echo $option['product_option_id']; ?>]" value="<?php echo $option_value['product_option_value_id']; ?>" id="input-value-<?php echo $option['product_option_id']; ?>_<?php echo $option_value['product_option_value_id']; ?>_productpage" />
+												<input data-option-prefix="<?php echo $option_value['price_prefix']; ?>" data-option-price="<?php echo $option_value['price_value']; ?>" onchange="recalc_quantity(<?php echo $product['product_id'];?>,<?php echo $product['minimum']; ?>,<?php echo $product['price_no_format'];?>,'<?php echo $product['special_no_format'];?>','.row-price','productpage');" type="radio" name="option[<?php echo $option['product_option_id']; ?>]" value="<?php echo $option_value['product_option_value_id']; ?>" id="input-value-<?php echo $option['product_option_id']; ?>_<?php echo $option_value['product_option_value_id']; ?>_productpage" />
 												<span for="input-value-<?php echo $option['product_option_id']; ?>_<?php echo $option_value['product_option_value_id']; ?>_productpage" class="color-option" data-toggle="tooltip" title="<?php echo $option_value['name'] . ($option_value['price'] ? ' ' . $option_value['price_prefix'] . $option_value['price'] : ''); ?>" style="background-color:<?php echo $option_value['color']?>"></span>
 											  </label>
 											</div>
@@ -309,7 +337,7 @@
 											<?php foreach ($option['product_option_value'] as $option_value) { ?>
 											<div class="image-radio">
 											  <label>
-												<input type="radio" name="option[<?php echo $option['product_option_id']; ?>]" value="<?php echo $option_value['product_option_value_id']; ?>" id="input-value-<?php echo $option['product_option_id']; ?>_<?php echo $option_value['product_option_value_id']; ?>_productpage" />
+												<input data-option-prefix="<?php echo $option_value['price_prefix']; ?>" data-option-price="<?php echo $option_value['price_value']; ?>" onchange="recalc_quantity(<?php echo $product['product_id'];?>,<?php echo $product['minimum']; ?>,<?php echo $product['price_no_format'];?>,'<?php echo $product['special_no_format'];?>','.row-price','productpage');" type="radio" name="option[<?php echo $option['product_option_id']; ?>]" value="<?php echo $option_value['product_option_value_id']; ?>" id="input-value-<?php echo $option['product_option_id']; ?>_<?php echo $option_value['product_option_value_id']; ?>_productpage" />
 												<img for="input-value-<?php echo $option['product_option_id']; ?>_<?php echo $option_value['product_option_value_id']; ?>_productpage" src="<?php echo $option_value['image']; ?>" alt="<?php echo $option_value['name'] . ($option_value['price'] ? ' ' . $option_value['price_prefix'] . $option_value['price'] : ''); ?>" class="img-thumbnail" data-toggle="tooltip" title="<?php echo $option_value['name'] . ($option_value['price'] ? ' ' . $option_value['price_prefix'] . $option_value['price'] : ''); ?>" /> 
 											  </label>
 											</div>
@@ -345,49 +373,41 @@
 					<meta itemprop="price" content="<?php echo rtrim(preg_replace("/[^0-9\.]/", "", ($product['special'] ? $product['special'] : $product['price'])), '.'); ?>">
 					<meta itemprop="priceCurrency" content="<?php echo $product['currency'] ?>">
 					<link itemprop="availability" href="http://schema.org/<?php echo ($product['availability'] ? "InStock" : "OutOfStock") ?>" />
-                  <?php if (!$product['special']) { ?>
-                  <?php echo $product['price']; ?>
-                  <?php } else { ?>
-                  <span class="price-old"><?php echo $product['price']; ?></span> <span class="price-new"><?php echo $product['special']; ?></span>
-                  <?php } ?>
+                   <?php if (!$product['special']) { ?>
+					  <span class="price_no_format_<?php echo $product['product_id'];?>"><?php echo $product['price']; ?></span>
+					  <?php } else { ?>
+					  <span class="price-old"><span class="price_no_format_<?php echo $product['product_id'];?>"><?php echo $product['price']; ?></span></span> <span class="price-new"><span class="special_no_format_<?php echo $product['product_id'];?>"><?php echo $product['special']; ?></span></span>
+					<?php } ?>
                   <?php if ($product['tax']) { ?>
                   <span class="price-tax"><?php echo $text_tax; ?> <?php echo $product['tax']; ?></span>
                   <?php } ?>
                 </p>
                 <?php } ?>
-				<div class="price-view-price">
-				<?php if (!$product['special']) { ?>
-					<span class="change-price<?php echo $product['product_id']; ?>" data-price="<?php echo $product['price_no_format']; ?>"><?php echo $product['price']; ?></span>
-				<?php } else { ?>
-					<span class="price-old change-price<?php echo $product['product_id']; ?>" data-price="<?php echo $product['price_no_format']; ?>">&nbsp;<?php echo $product['price']; ?>&nbsp;</span> <span class="price-new change-special<?php echo $product['product_id']; ?>" data-price="<?php echo $product['special_no_format']; ?>"><?php echo $product['special']; ?></span>
-				<?php } ?>
-				<?php if ($product['tax']) { ?>
-                  <span class="price-tax"><?php echo $text_tax; ?> <?php echo $product['tax']; ?></span>
-                <?php } ?>
-				</div>
-				<div class="quantity_cart-view-price">
-					<div class="quick-cell-content pquantity">
-						<div class="input-group popup-quantity">
-							<span class="input-group-btn">
-								<button onclick="btnminus_cat_price<?php echo $product['product_id'];?>('<?php echo $product['minimum']; ?>');" type="button" class="btn btn-update-popup">-</button>
-							</span>
-								<input id="htopcat_list<?php echo $product['product_id'];?>" class="htopcat<?php echo $product['product_id'];?> form-control" name="<?php echo $product['product_id']; ?>" oninput="recalc(<?php echo $product['product_id']; ?>);" size="2" value="<?php echo $product['minimum']; ?>">
-							<span class="input-group-btn">
-								<button onclick="btnplus_cat_price<?php echo $product['product_id'];?>();" type="button" class="btn btn-update-popup">+</button>
-							</span>
+				<?php if(isset($config_additional_settings_newstore['quantity_btn_page']) && ($config_additional_settings_newstore['quantity_btn_page'] =='1')){?>
+					<div class="quantity_plus_minus">
+						<div class="quantity_cont">
+							<div class="input-group">
+								<span class="input-group-btn">
+									<button class="btn btn-quantity-minus" onclick="btnminus_cat_price_page<?php echo $product['product_id'];?>('<?php echo $product['minimum']; ?>');" type="button">-</button>
+								</span>
+									<input id="input_quantity_page<?php echo $product['product_id'];?>" class="form-control input-number-quantity<?php echo $product['product_id'];?>" name="quantity" onkeyup="validate_quantity(this,'<?php echo $product['minimum']; ?>')" oninput="recalc_quantity(<?php echo $product['product_id'];?>,<?php echo $product['minimum']; ?>, <?php echo $product['price_no_format'];?>,'<?php echo $product['special_no_format'];?>','.row-price','productpage');" size="2" value="<?php echo $product['minimum']; ?>">
+								<span class="input-group-btn">
+									<button class="btn btn-quantity-plus" onclick="btnplus_cat_price_page<?php echo $product['product_id'];?>();" type="button" >+</button>
+								</span>
+							</div>	
 						</div>
 					</div>
-				</div>
 					<script type="text/javascript">
-							function btnminus_cat_price<?php echo $product['product_id'];?>(a){
-								document.getElementById("htopcat_list<?php echo $product['product_id'];?>").value>a?document.getElementById("htopcat_list<?php echo $product['product_id'];?>").value--:document.getElementById("htopcat_list<?php echo $product['product_id'];?>").value=a;										
-								recalc(<?php echo $product['product_id'];?>);						
+							function btnminus_cat_price_page<?php echo $product['product_id'];?>(a){
+								document.getElementById("input_quantity_page<?php echo $product['product_id'];?>").value>a?document.getElementById("input_quantity_page<?php echo $product['product_id'];?>").value--:document.getElementById("input_quantity_page<?php echo $product['product_id'];?>").value=a;										
+								recalc_quantity(<?php echo $product['product_id'];?>,<?php echo $product['minimum']; ?>,<?php echo $product['price_no_format'];?>,'<?php echo $product['special_no_format'];?>','.row-price','productpage');						
 							}
-							function btnplus_cat_price<?php echo $product['product_id'];?>(){
-								document.getElementById("htopcat_list<?php echo $product['product_id'];?>").value++;
-								recalc(<?php echo $product['product_id'];?>);							
+							function btnplus_cat_price_page<?php echo $product['product_id'];?>(){
+								document.getElementById("input_quantity_page<?php echo $product['product_id'];?>").value++;
+								recalc_quantity(<?php echo $product['product_id'];?>,<?php echo $product['minimum']; ?>,<?php echo $product['price_no_format'];?>,'<?php echo $product['special_no_format'];?>','.row-price','productpage');					
 							};																				
 					</script>
+				<?php } ?>
 				<div class="actions">
 					<?php if($ns_on_off_category_page_wishlist !='0') { ?>
 						<div class="wishlist"><button class="btn btn-wishlist" type="button" data-toggle="tooltip" title="<?php echo $button_wishlist; ?>" onclick="wishlist.add('<?php echo $product['product_id']; ?>');"><i class="fa fa-heart"></i></button></div>
@@ -395,7 +415,7 @@
 					<?php if (($product['product_quantity'] <= 0) && $disable_cart_button){ ?>
 						<div class="cart"><button class="btn btn-general" type="button" disabled><?php if($change_text_cart_button_out_of_stock ==1) { ?><i class="fa fa-minus-square out_of_stock"></i> <span><?php echo $disable_cart_button_text; ?></span><?php } else { ?><i class="fa fa-shopping-basket"></i> <span><?php echo $button_cart; ?></span><?php } ?></button></div>
 					<?php } else { ?>
-						<div class="cart"><button class="btn btn-general" type="button" onclick="cart.add('<?php echo $product['product_id']; ?>','productpage', $('.quantity_cart-view-price').find('input.htopcat<?php echo $product['product_id'];?>[name^=<?php echo $product['product_id']; ?>]').val());"><?php if($change_text_cart_button_out_of_stock ==1 && $product['product_quantity'] <= 0) { ?><i class="fa fa-minus-square out_of_stock"></i> <span><?php echo $disable_cart_button_text; ?></span><?php } else { ?><i class="fa fa-shopping-basket"></i> <span><?php echo $button_cart; ?></span><?php } ?></button></div>
+						<div class="cart"><button class="btn btn-general" type="button" onclick="cart.add('<?php echo $product['product_id']; ?>','productpage', get_cart_quantity('<?php echo $product['product_id']; ?>','.row-price'));"><?php if($change_text_cart_button_out_of_stock ==1 && $product['product_quantity'] <= 0) { ?><i class="fa fa-minus-square out_of_stock"></i> <span><?php echo $disable_cart_button_text; ?></span><?php } else { ?><i class="fa fa-shopping-basket"></i> <span><?php echo $button_cart; ?></span><?php } ?></button></div>
 					<?php } ?>
 
 					<?php if($ns_on_off_category_page_compare !='0') { ?>
@@ -425,8 +445,8 @@
       <div class="row">
         <div class="col-sm-12 text-center"><?php echo $pagination; ?></div>
         <div class="col-sm-12 text-right"><?php echo $results; ?></div>
-      </div>	
-	<br />
+      </div>
+		<br />
 		  <script type="text/javascript"><!--
 	function price_format(n){ 	
 		c = <?php echo (empty($currency['decimals']) ? "0" : $currency['decimals'] ); ?>;

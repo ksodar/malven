@@ -4,9 +4,9 @@
   <?php foreach ($banners as $banner) { ?>
   <div class="item text-center">
     <?php if ($banner['link']) { ?>
-    <a href="<?php echo $banner['link']; ?>"><img src="<?php echo $banner['image']; ?>" alt="<?php echo $banner['title']; ?>" class="img-responsive img-center" /></a>
+    <a href="<?php echo $banner['link']; ?>"><img data-src="<?php echo $banner['image']; ?>" alt="<?php echo $banner['title']; ?>" class="img-responsive img-center lazyOwl" /></a>
     <?php } else { ?>
-    <img src="<?php echo $banner['image']; ?>" alt="<?php echo $banner['title']; ?>" class="img-responsive img-center" />
+    <img data-src="<?php echo $banner['image']; ?>" alt="<?php echo $banner['title']; ?>" class="img-responsive img-center lazyOwl" />
     <?php } ?>
   </div>
   <?php } ?>
@@ -15,7 +15,8 @@
 <script type="text/javascript"><!--
 $('#carousel<?php echo $module; ?>').owlCarousel({
 	items: 6,
-	autoPlay: 3000,
+	autoPlay: 7000,
+	lazyLoad: true,
 	navigation: true,
 	navigationText: ['<div class="btn btn-carousel-module next-prod"><i class="fa fa-angle-left arrow"></i></div>', '<div class="btn btn-carousel-module prev-prod"><i class="fa fa-angle-right arrow"></i></div>'],
 	pagination: false

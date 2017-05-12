@@ -192,4 +192,17 @@ function Place(name, latitude, longitude, description){
 google.maps.event.addDomListener(window, 'load', initialize);
 </script>
 </footer>
+<script type="text/javascript"><!--
+	function price_format(n){ 	
+		c = <?php echo (empty($currency['decimals']) ? "0" : $currency['decimals'] ); ?>;
+		d = '<?php echo $currency['decimal_point']; ?>';
+		t = '<?php echo $currency['thousand_point']; ?>';
+		s_left = '<?php echo $currency['symbol_left']; ?>';
+		s_right = '<?php echo $currency['symbol_right']; ?>';
+		n = n * <?php echo $currency['value']; ?>;
+		i = parseInt(n = Math.abs(n).toFixed(c)) + ''; 
+		j = ((j = i.length) > 3) ? j % 3 : 0; 
+		return s_left + (j ? i.substr(0, j) + t : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : '') + s_right; 
+	}
+	//--></script>
 </body></html>

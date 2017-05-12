@@ -1,6 +1,8 @@
 <?php
 class ControllerModuleProductviewed extends Controller {
 	public function index($setting) {
+		$data['text_select'] = $this->language->get('text_select');	
+		$data['config_additional_settings_newstore'] = $this->config->get('config_additional_settings_newstore');
 		$data['show_special_timer_module'] = $this->config->get('config_show_special_timer_module');
 		$data['on_off_sticker_special'] = $this->config->get('on_off_sticker_special');
 		$data['config_change_icon_sticker_special'] = $this->config->get('config_change_icon_sticker_special');
@@ -75,7 +77,8 @@ class ControllerModuleProductviewed extends Controller {
 		}
 		if (!empty($this->session->data['productviewed']) && count($this->session->data['productviewed']) > 0) {
 	
-			$result = array_slice($this->session->data['productviewed'], 0, $setting['limit']);
+			$productviewed = array_unique($this->session->data['productviewed']);
+			$result = array_slice($productviewed, 0, $setting['limit']);
 
 			$products = array_unique($result);
 			
@@ -83,8 +86,6 @@ class ControllerModuleProductviewed extends Controller {
 			
 			foreach ($products as $product_id) {
 				$product_info = $this->model_catalog_product->getProduct($product_id);
-				
-				
 
 				if ($product_info) {
 					if ($product_info['image']) {
@@ -181,6 +182,7 @@ class ControllerModuleProductviewed extends Controller {
 									'color'                   => $option_value['color'],
 									'image'                   => $this->model_tool_image->resize($option_value['image'], 50, 50),
 									'price'                   => $option_price,
+									'price_value'             => $this->tax->calculate($option_value['price'], $result['tax_class_id'], $this->config->get('config_tax') ? 'P' : false),
 									'price_prefix'            => $option_value['price_prefix']
 								);
 							}
@@ -215,11 +217,25 @@ class ControllerModuleProductviewed extends Controller {
 					$str_timer_1 = substr($result['date_end'],0,strpos($result['date_end'],"-")); 
 					$str_timer_2 = substr(str_replace("-","", substr($result['date_end'],strpos($result['date_end'],"-"))),0,2) - 1;
 					$str_timer_3 = substr(str_replace("-","", substr($result['date_end'],strpos($result['date_end'],"-"))),2);
+					if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
+						$price_no_format = $this->tax->calculate($product_info['price'], $product_info['tax_class_id'], $this->config->get('config_tax'));
+					} else {
+						$price_no_format = false;
+					}
+
+					if ((float)$product_info['special']) {
+						$special_no_format = $this->tax->calculate($product_info['special'], $product_info['tax_class_id'], $this->config->get('config_tax'));
+					} else {
+						$special_no_format = false;
+					}
 					$data['products'][] = array(
 						'str_timer_1'	  	=> $str_timer_1,
 						'str_timer_2'	  	=> $str_timer_2,
 						'str_timer_3'	  	=> $str_timer_3,	
 						'options'	  		=> $options,
+						'minimum'     		=> ($product_info['minimum'] > 0) ? $product_info['minimum'] : 1,
+						'price_no_format' 	=> $price_no_format,
+						'special_no_format' => $special_no_format,	
 						'product_quantity' 	=> $product_quantity,
 						'stock_status' 		=> $stock_status,
 						'additional_img' 	=> $additional_img,

@@ -1,5 +1,5 @@
 <?php echo $header; ?>
-<span itemscope itemtype="http://schema.org/Store">
+<span itemscope itemtype="http://schema.org/Organization">
 <meta itemprop="name" content="<?php echo $name; ?>">
 <meta itemprop="logo" content="<?php echo $logo; ?>">
 <meta itemprop="url" content="<?php echo $url; ?>">
@@ -15,7 +15,7 @@
 <div class="container">
 	<div class="row">
 	<?php if(($general_menu_on_off =='1') && ($main_menu =='1')) { ?>
-		<div class="col-sm-4 col-md-3 hidden-xs">
+		<div class="col-sm-4 col-md-3 position-no-owl hidden-xs hidden-sm">
 			<div id="menu-header-open"></div>
 			<?php echo $newstore_pos0; ?>
 		</div>

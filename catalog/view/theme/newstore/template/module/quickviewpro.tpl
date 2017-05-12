@@ -538,6 +538,7 @@ $('#button-cart-quickview').on('click', function() {
 				if(json['popup_design']=='1'){
 						fastorder_open_cart();
 				} else {
+					$.magnificPopup.close();
 					html  = '<div id="modal-addcart" class="modal">';
 					html += '  <div class="modal-dialog" style="overflow:hidden">';
 					html += '    <div class="modal-content">';

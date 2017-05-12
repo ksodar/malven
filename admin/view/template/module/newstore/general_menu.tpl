@@ -192,6 +192,50 @@ function change_developer_mode(config_developer_mode){
 					</div>
 				</div>
 				<div class="form-group">
+					<label class="col-sm-3 control-label"><?php echo $text_quantity_btn_module;?></label>
+					<div class="col-sm-9">
+						<div class="radio-group-infinity">	
+							<?php if ($config_additional_settings_newstore['quantity_btn_module']) { ?>
+							<input id="config_asn_quantity_btn_module_yes" class="hide-radio" type="radio" name="config_additional_settings_newstore[quantity_btn_module]" value="1" checked="checked" />
+							<label for="config_asn_quantity_btn_module_yes"><?php echo $text_yes; ?></label>
+							<?php } else { ?>
+							<input id="config_asn_quantity_btn_module_yes" class="hide-radio" type="radio" name="config_additional_settings_newstore[quantity_btn_module]" value="1" />
+							<label for="config_asn_quantity_btn_module_yes"><?php echo $text_yes; ?></label>
+							<?php } ?>
+							<?php if (!$config_additional_settings_newstore['quantity_btn_module']) { ?>
+							<input id="config_asn_quantity_btn_module_no" class="hide-radio" type="radio" name="config_additional_settings_newstore[quantity_btn_module]" value="0" checked="checked" />							
+							<label for="config_asn_quantity_btn_module_no"><?php echo $text_no; ?></label>
+							<?php } else { ?>
+							<input id="config_asn_quantity_btn_module_no" class="hide-radio" type="radio" name="config_additional_settings_newstore[quantity_btn_module]" value="0" />							
+							<label for="config_asn_quantity_btn_module_no"><?php echo $text_no; ?></label>
+							<?php } ?>						  
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-3 control-label"><?php echo $text_quantity_btn_page;?>
+					<div class="label-description"><?php echo $text_options_product_page_description;?></div>
+					</label>
+					<div class="col-sm-9">
+						<div class="radio-group-infinity">	
+							<?php if ($config_additional_settings_newstore['quantity_btn_page']) { ?>
+							<input id="config_asn_quantity_btn_page_yes" class="hide-radio" type="radio" name="config_additional_settings_newstore[quantity_btn_page]" value="1" checked="checked" />
+							<label for="config_asn_quantity_btn_page_yes"><?php echo $text_yes; ?></label>
+							<?php } else { ?>
+							<input id="config_asn_quantity_btn_page_yes" class="hide-radio" type="radio" name="config_additional_settings_newstore[quantity_btn_page]" value="1" />
+							<label for="config_asn_quantity_btn_page_yes"><?php echo $text_yes; ?></label>
+							<?php } ?>
+							<?php if (!$config_additional_settings_newstore['quantity_btn_page']) { ?>
+							<input id="config_asn_quantity_btn_page_no" class="hide-radio" type="radio" name="config_additional_settings_newstore[quantity_btn_page]" value="0" checked="checked" />							
+							<label for="config_asn_quantity_btn_page_no"><?php echo $text_no; ?></label>
+							<?php } else { ?>
+							<input id="config_asn_quantity_btn_page_no" class="hide-radio" type="radio" name="config_additional_settings_newstore[quantity_btn_page]" value="0" />							
+							<label for="config_asn_quantity_btn_page_no"><?php echo $text_no; ?></label>
+							<?php } ?>						  
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
 					<div class="col-sm-12 title-setting"><?php echo $title_setting_options;?></div>
 				</div>
 				<div class="form-group">

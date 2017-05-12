@@ -1,6 +1,8 @@
 <?php
 class ControllerModuleProductCategorytabs extends Controller {
 	public function index($setting) {
+		$data['text_select'] = $this->language->get('text_select');	
+		$data['config_additional_settings_newstore'] = $this->config->get('config_additional_settings_newstore');
 		static $module = 0;
 		$this->load->language('module/product_categorytabs');
 		$data['show_special_timer_module'] = $this->config->get('config_show_special_timer_module');
@@ -199,11 +201,11 @@ class ControllerModuleProductCategorytabs extends Controller {
 				$additional_img[] = $image_additional;
 				}
 				$additional_image_hover = '';
-				$additional_image_hover_on_off = $this->config->get('config_on_off_featured_slider_additional_image');
+				$additional_image_hover_on_off = $this->config->get('config_on_off_tab_featured_slider_additional_image');
 				if($additional_image_hover_on_off =='2'){
 					foreach ($results_img as $key => $result_img) {
 						if ($key < 1) {
-							$additional_image_hover = $this->model_tool_image->resize($result_img['image'], $this->config->get('config_image_product_width'), $this->config->get('config_image_product_height'));	
+							$additional_image_hover = $this->model_tool_image->resize($result_img['image'], $setting['width'], $setting['height']);	
 						}
 					}
 				}
@@ -252,6 +254,7 @@ class ControllerModuleProductCategorytabs extends Controller {
 									'color'                   => $option_value['color'],
 									'image'                   => $this->model_tool_image->resize($option_value['image'], 50, 50),
 									'price'                   => $option_price,
+									'price_value'             => $this->tax->calculate($option_value['price'], $result['tax_class_id'], $this->config->get('config_tax') ? 'P' : false),
 									'price_prefix'            => $option_value['price_prefix']
 								);
 							}
@@ -286,12 +289,26 @@ class ControllerModuleProductCategorytabs extends Controller {
 				$str_timer_1 = substr($result['date_end'],0,strpos($result['date_end'],"-")); 
 				$str_timer_2 = substr(str_replace("-","", substr($result['date_end'],strpos($result['date_end'],"-"))),0,2) - 1;
 				$str_timer_3 = substr(str_replace("-","", substr($result['date_end'],strpos($result['date_end'],"-"))),2);
+				if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
+					$price_no_format = $this->tax->calculate($result['price'], $result['tax_class_id'], $this->config->get('config_tax'));
+				} else {
+					$price_no_format = false;
+				}
+
+				if ((float)$result['special']) {
+					$special_no_format = $this->tax->calculate($result['special'], $result['tax_class_id'], $this->config->get('config_tax'));
+				} else {
+					$special_no_format = false;
+				}
 				$data['featured_products'][] = array(	
 					'str_timer_1'	  	=> $str_timer_1,
 					'str_timer_2'	  	=> $str_timer_2,
 					'str_timer_3'	  	=> $str_timer_3,	
 					'product_id'  		=> $result['product_id'],
 					'options'	  		=> $options,
+					'minimum'     		=> ($result['minimum'] > 0) ? $result['minimum'] : 1,
+					'price_no_format' 	=> $price_no_format,
+					'special_no_format' => $special_no_format,
 					'product_quantity' 	=> $product_quantity,
 					'stock_status' 		=> $stock_status,
 					'additional_img' 	=> $additional_img,
@@ -318,11 +335,18 @@ class ControllerModuleProductCategorytabs extends Controller {
 			}
 		}
 		
+		if($setting['show_only_featured_product'] =='0'){
+			$results_latest = $this->model_module_productcategorytabs->getLatestProducts($filter_data);
+			$results_bestseller = $this->model_module_productcategorytabs->getBestSellerProducts($filter_data);
+			$results_special = $this->model_module_productcategorytabs->getProductSpecials($filter_data);
+			$results_most_viewed = $this->model_module_productcategorytabs->getProductMostViewed($filter_data);
+		} else {
+			$results_latest = array();
+			$results_bestseller = array();
+			$results_special = array();
+			$results_most_viewed = array();
+		}
 		
-		$results_latest = $this->model_catalog_product->getProducts($filter_data);
-		$results_bestseller = $this->model_module_productcategorytabs->getBestSellerProducts($filter_data);
-		$results_special = $this->model_module_productcategorytabs->getProductSpecials($filter_data);
-		$results_most_viewed = $this->model_module_productcategorytabs->getProductMostViewed($filter_data);
 		$data['latest_products'] = array();
 		if ($results_latest) {
 			foreach ($results_latest as $result) {
@@ -366,11 +390,11 @@ class ControllerModuleProductCategorytabs extends Controller {
 				$additional_img[] = $image_additional;
 				}
 				$additional_image_hover = '';
-				$additional_image_hover_on_off = $this->config->get('config_on_off_featured_slider_additional_image');
+				$additional_image_hover_on_off = $this->config->get('config_on_off_tab_latest_slider_additional_image');
 				if($additional_image_hover_on_off =='2'){
 					foreach ($results_img as $key => $result_img) {
 						if ($key < 1) {
-							$additional_image_hover = $this->model_tool_image->resize($result_img['image'], $this->config->get('config_image_product_width'), $this->config->get('config_image_product_height'));	
+							$additional_image_hover = $this->model_tool_image->resize($result_img['image'], $setting['width'], $setting['height']);	
 						}
 					}
 				}
@@ -419,6 +443,7 @@ class ControllerModuleProductCategorytabs extends Controller {
 									'color'                   => $option_value['color'],
 									'image'                   => $this->model_tool_image->resize($option_value['image'], 50, 50),
 									'price'                   => $option_price,
+									'price_value'             => $this->tax->calculate($option_value['price'], $result['tax_class_id'], $this->config->get('config_tax') ? 'P' : false),
 									'price_prefix'            => $option_value['price_prefix']
 								);
 							}
@@ -453,12 +478,26 @@ class ControllerModuleProductCategorytabs extends Controller {
 				$str_timer_1 = substr($result['date_end'],0,strpos($result['date_end'],"-")); 
 				$str_timer_2 = substr(str_replace("-","", substr($result['date_end'],strpos($result['date_end'],"-"))),0,2) - 1;
 				$str_timer_3 = substr(str_replace("-","", substr($result['date_end'],strpos($result['date_end'],"-"))),2);
+				if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
+					$price_no_format = $this->tax->calculate($result['price'], $result['tax_class_id'], $this->config->get('config_tax'));
+				} else {
+					$price_no_format = false;
+				}
+
+				if ((float)$result['special']) {
+					$special_no_format = $this->tax->calculate($result['special'], $result['tax_class_id'], $this->config->get('config_tax'));
+				} else {
+					$special_no_format = false;
+				}
 				$data['latest_products'][] = array(	
 					'str_timer_1'	  	=> $str_timer_1,
 					'str_timer_2'	  	=> $str_timer_2,
 					'str_timer_3'	  	=> $str_timer_3,	
 					'product_id'  		=> $result['product_id'],
 					'options'	  		=> $options,
+					'minimum'     		=> ($result['minimum'] > 0) ? $result['minimum'] : 1,
+					'price_no_format' 	=> $price_no_format,
+					'special_no_format' => $special_no_format,
 					'product_quantity' 	=> $product_quantity,
 					'stock_status' 		=> $stock_status,
 					'additional_img' 	=> $additional_img,
@@ -528,11 +567,11 @@ class ControllerModuleProductCategorytabs extends Controller {
 				$additional_img[] = $image_additional;
 				}
 				$additional_image_hover = '';
-				$additional_image_hover_on_off = $this->config->get('config_on_off_featured_slider_additional_image');
+				$additional_image_hover_on_off = $this->config->get('config_on_off_tab_bestseller_slider_additional_image');
 				if($additional_image_hover_on_off =='2'){
 					foreach ($results_img as $key => $result_img) {
 						if ($key < 1) {
-							$additional_image_hover = $this->model_tool_image->resize($result_img['image'], $this->config->get('config_image_product_width'), $this->config->get('config_image_product_height'));	
+							$additional_image_hover = $this->model_tool_image->resize($result_img['image'], $setting['width'], $setting['height']);	
 						}
 					}
 				}
@@ -581,6 +620,7 @@ class ControllerModuleProductCategorytabs extends Controller {
 									'color'                   => $option_value['color'],
 									'image'                   => $this->model_tool_image->resize($option_value['image'], 50, 50),
 									'price'                   => $option_price,
+									'price_value'             => $this->tax->calculate($option_value['price'], $result['tax_class_id'], $this->config->get('config_tax') ? 'P' : false),
 									'price_prefix'            => $option_value['price_prefix']
 								);
 							}
@@ -615,12 +655,26 @@ class ControllerModuleProductCategorytabs extends Controller {
 				$str_timer_1 = substr($result['date_end'],0,strpos($result['date_end'],"-")); 
 				$str_timer_2 = substr(str_replace("-","", substr($result['date_end'],strpos($result['date_end'],"-"))),0,2) - 1;
 				$str_timer_3 = substr(str_replace("-","", substr($result['date_end'],strpos($result['date_end'],"-"))),2);
+				if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
+					$price_no_format = $this->tax->calculate($result['price'], $result['tax_class_id'], $this->config->get('config_tax'));
+				} else {
+					$price_no_format = false;
+				}
+
+				if ((float)$result['special']) {
+					$special_no_format = $this->tax->calculate($result['special'], $result['tax_class_id'], $this->config->get('config_tax'));
+				} else {
+					$special_no_format = false;
+				}
 				$data['bestseller_products'][] = array(
 					'str_timer_1'	  	=> $str_timer_1,
 					'str_timer_2'	  	=> $str_timer_2,
 					'str_timer_3'	  	=> $str_timer_3,	
 					'product_id'  		=> $result['product_id'],
 					'options'	  		=> $options,
+					'minimum'     		=> ($result['minimum'] > 0) ? $result['minimum'] : 1,
+					'price_no_format' 	=> $price_no_format,
+					'special_no_format' => $special_no_format,
 					'product_quantity' 	=> $product_quantity,
 					'stock_status' 		=> $stock_status,
 					'additional_img' 	=> $additional_img,
@@ -689,11 +743,11 @@ class ControllerModuleProductCategorytabs extends Controller {
 				$additional_img[] = $image_additional;
 				}
 				$additional_image_hover = '';
-				$additional_image_hover_on_off = $this->config->get('config_on_off_featured_slider_additional_image');
+				$additional_image_hover_on_off = $this->config->get('config_on_off_tab_special_slider_additional_image');
 				if($additional_image_hover_on_off =='2'){
 					foreach ($results_img as $key => $result_img) {
 						if ($key < 1) {
-							$additional_image_hover = $this->model_tool_image->resize($result_img['image'], $this->config->get('config_image_product_width'), $this->config->get('config_image_product_height'));	
+							$additional_image_hover = $this->model_tool_image->resize($result_img['image'], $setting['width'], $setting['height']);	
 						}
 					}
 				}
@@ -742,6 +796,7 @@ class ControllerModuleProductCategorytabs extends Controller {
 									'color'                   => $option_value['color'],
 									'image'                   => $this->model_tool_image->resize($option_value['image'], 50, 50),
 									'price'                   => $option_price,
+									'price_value'             => $this->tax->calculate($option_value['price'], $result['tax_class_id'], $this->config->get('config_tax') ? 'P' : false),
 									'price_prefix'            => $option_value['price_prefix']
 								);
 							}
@@ -776,12 +831,26 @@ class ControllerModuleProductCategorytabs extends Controller {
 				$str_timer_1 = substr($result['date_end'],0,strpos($result['date_end'],"-")); 
 				$str_timer_2 = substr(str_replace("-","", substr($result['date_end'],strpos($result['date_end'],"-"))),0,2) - 1;
 				$str_timer_3 = substr(str_replace("-","", substr($result['date_end'],strpos($result['date_end'],"-"))),2);
+				if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
+					$price_no_format = $this->tax->calculate($result['price'], $result['tax_class_id'], $this->config->get('config_tax'));
+				} else {
+					$price_no_format = false;
+				}
+
+				if ((float)$result['special']) {
+					$special_no_format = $this->tax->calculate($result['special'], $result['tax_class_id'], $this->config->get('config_tax'));
+				} else {
+					$special_no_format = false;
+				}
 				$data['special_products'][] = array(
 					'str_timer_1'	  	=> $str_timer_1,
 					'str_timer_2'	  	=> $str_timer_2,
 					'str_timer_3'	  	=> $str_timer_3,	
 					'product_id'  		=> $result['product_id'],
 					'options'	  		=> $options,
+					'minimum'     		=> ($result['minimum'] > 0) ? $result['minimum'] : 1,
+					'price_no_format' 	=> $price_no_format,
+					'special_no_format' => $special_no_format,
 					'product_quantity' 	=> $product_quantity,
 					'stock_status' 		=> $stock_status,
 					'additional_img' 	=> $additional_img,
@@ -849,11 +918,11 @@ class ControllerModuleProductCategorytabs extends Controller {
 				$additional_img[] = $image_additional;
 				}
 				$additional_image_hover = '';
-				$additional_image_hover_on_off = $this->config->get('config_on_off_featured_slider_additional_image');
+				$additional_image_hover_on_off = $this->config->get('config_on_off_tab_popular_slider_additional_image');
 				if($additional_image_hover_on_off =='2'){
 					foreach ($results_img as $key => $result_img) {
 						if ($key < 1) {
-							$additional_image_hover = $this->model_tool_image->resize($result_img['image'], $this->config->get('config_image_product_width'), $this->config->get('config_image_product_height'));	
+							$additional_image_hover = $this->model_tool_image->resize($result_img['image'], $setting['width'], $setting['height']);	
 						}
 					}
 				}
@@ -902,6 +971,7 @@ class ControllerModuleProductCategorytabs extends Controller {
 									'color'                   => $option_value['color'],
 									'image'                   => $this->model_tool_image->resize($option_value['image'], 50, 50),
 									'price'                   => $option_price,
+									'price_value'             => $this->tax->calculate($option_value['price'], $result['tax_class_id'], $this->config->get('config_tax') ? 'P' : false),
 									'price_prefix'            => $option_value['price_prefix']
 								);
 							}
@@ -936,12 +1006,26 @@ class ControllerModuleProductCategorytabs extends Controller {
 				$str_timer_1 = substr($result['date_end'],0,strpos($result['date_end'],"-")); 
 				$str_timer_2 = substr(str_replace("-","", substr($result['date_end'],strpos($result['date_end'],"-"))),0,2) - 1;
 				$str_timer_3 = substr(str_replace("-","", substr($result['date_end'],strpos($result['date_end'],"-"))),2);
+				if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
+					$price_no_format = $this->tax->calculate($result['price'], $result['tax_class_id'], $this->config->get('config_tax'));
+				} else {
+					$price_no_format = false;
+				}
+
+				if ((float)$result['special']) {
+					$special_no_format = $this->tax->calculate($result['special'], $result['tax_class_id'], $this->config->get('config_tax'));
+				} else {
+					$special_no_format = false;
+				}
 				$data['popular_products'][] = array(
 					'str_timer_1'	  	=> $str_timer_1,
 					'str_timer_2'	  	=> $str_timer_2,
 					'str_timer_3'	  	=> $str_timer_3,
 					'product_id'  		=> $result['product_id'],
 					'options'	  		=> $options,
+					'minimum'     		=> ($result['minimum'] > 0) ? $result['minimum'] : 1,
+					'price_no_format' 	=> $price_no_format,
+					'special_no_format' => $special_no_format,
 					'product_quantity' 	=> $product_quantity,
 					'stock_status' 		=> $stock_status,
 					'additional_img' 	=> $additional_img,

@@ -1,7 +1,7 @@
 <?php if ($modules) { ?>
-	<div class="col-sm-12">	
+	<div class="row">
 		<?php foreach ($modules as $module) { ?>
-			<?php echo $module; ?>
+			<div class="col-sm-12"><?php echo $module; ?></div>
 		<?php } ?>	
 	</div>
 <?php } ?>

@@ -9,6 +9,8 @@ $_['text_open_banner_popup'] 			 = 'Open links in a popup?';
 $_['text_select_icon'] 			 		 = 'Icon: ';
 $_['text_header_nav_menu'] 			 	 = 'Link in the top menu';
 
+$_['text_quantity_btn_module'] 			 = 'Quantity button in modules';
+$_['text_quantity_btn_page'] 			 = 'Quantity button on the pages';
 $_['text_review'] 					 	 = 'Reviews';
 $_['entry_fields_dignity'] 			 	 = 'Field dignity';
 $_['entry_fields_required'] 			 = 'Required information';

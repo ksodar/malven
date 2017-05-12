@@ -1,32 +1,52 @@
 <?php
 class ModelModuleSettingnewstore extends Model {
 	public function getWallCategories($parent_id = 0) {
-		$category_data = array();
-
-		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "category c LEFT JOIN " . DB_PREFIX . "category_description cd ON (c.category_id = cd.category_id) WHERE c.parent_id = '" . (int)$parent_id . "' AND c.top = '1' AND cd.language_id = '" . (int)$this->config->get('config_language_id') . "' ORDER BY c.sort_order, cd.name ASC");
-
-		foreach ($query->rows as $result) {
-			$category_data[] = array(
-				'category_id' => $result['category_id'],
-				'name'        => $this->getPath($result['category_id'], $this->config->get('config_language_id')),
-				'status'      => $result['status'],
-				'sort_order'  => $result['sort_order']
-				);
-
-			$category_data = array_merge($category_data, $this->getWallCategories($result['category_id']));
-		}
-
-		return $category_data;
-	}
-	public function getPath($category_id) {
-		$query = $this->db->query("SELECT name, parent_id FROM " . DB_PREFIX . "category c LEFT JOIN " . DB_PREFIX . "category_description cd ON (c.category_id = cd.category_id) WHERE c.category_id = '" . (int)$category_id . "' AND cd.language_id = '" . (int)$this->config->get('config_language_id') . "' ORDER BY c.sort_order, cd.name ASC");
-
-		if ($query->row['parent_id']) {
-			return $this->getPath($query->row['parent_id'], $this->config->get('config_language_id')) . " / " . $query->row['name'];
-		} else {
-			return $query->row['name'];
+		
+	}	
+	private $land;
+    
+    public function __construct($registry) {
+		parent::__construct($registry);
+        $this->land = $this->land();
+    }
+    
+    private function land() {
+        return (int)$this->config->get('config_language_id');
+    }
+	public function getCategorys($category) {
+		if($category){
+			$query = $this->db->query("SELECT c.`category_id`, cd2.`name` FROM " . DB_PREFIX . "category c 
+			LEFT JOIN " . DB_PREFIX . "category_description cd2 ON (c.category_id = cd2.category_id) 
+			WHERE c.`category_id` IN (".implode(',',$category).") AND cd2.language_id = " . $this->land . "");
+			return $query->rows;
 		}
 	}
+	
+	
+	public function getCategory($category_id) {
+		$query = $this->db->query("SELECT c.`category_id`, cd2.`name` FROM " . DB_PREFIX . "category c 
+		LEFT JOIN " . DB_PREFIX . "category_description cd2 ON (c.`category_id` = cd2.`category_id`) WHERE c.`category_id` = " . (int)$category_id . " AND cd2.language_id = " . $this->land . "");
+
+		return $query->row;
+	}
+	public function getInformations() {
+			$sql = "SELECT i.`information_id`,id.`title` FROM " . DB_PREFIX . "information i 
+			LEFT JOIN " . DB_PREFIX . "information_description id ON (i.`information_id` = id.`information_id`) 
+			WHERE id.language_id = " . $this->land . "";
+
+			$query = $this->db->query($sql);
+
+			return $query->rows;
+		
+	}
+	public function getProduct($product_id) {
+		$query = $this->db->query("SELECT p.`product_id`, pd.`name` FROM " . DB_PREFIX . "product p 
+		LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id) 
+		WHERE p.product_id = '" . (int)$product_id . "' AND pd.language_id = " . $this->land . "");
+
+		return $query->row;
+	}
+	
 	public function saveSetting($data) {
 		$store_id = 0;			
 		$code = 'settingnewstore';					

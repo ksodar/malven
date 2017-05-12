@@ -1,5 +1,26 @@
 <?php
 class ModelModuleProductcategorytabs extends Model {
+	public function getLatestProducts($data = array()) {
+		$product_data = $this->cache->get('productcategorytabs.latest.' . (int)$this->config->get('config_language_id') . '.' . (int)$this->config->get('config_store_id') . '.' . $this->config->get('config_customer_group_id') . '.' . (int)$data['limit']);
+
+		if (!$product_data) {
+			$query = $this->db->query("SELECT p.product_id FROM " . DB_PREFIX . "product p 
+			LEFT JOIN " . DB_PREFIX . "product_to_store p2s ON (p.product_id = p2s.product_id) 
+			 LEFT JOIN " . DB_PREFIX . "product_to_category p2c ON (p.product_id = p2c.product_id) 
+			WHERE p.status = '1' AND p.date_available <= NOW() 
+			AND p2c.category_id = '". $data['filter_category_id'] ."'  
+			AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "' 
+			ORDER BY p.date_added DESC LIMIT " . (int)$data['limit']);
+
+			foreach ($query->rows as $result) {
+				$product_data[$result['product_id']] = $this->model_catalog_product->getProduct($result['product_id']);
+			}
+
+			$this->cache->set('productcategorytabs.latest.' . (int)$this->config->get('config_language_id') . '.' . (int)$this->config->get('config_store_id') . '.' . $this->config->get('config_customer_group_id') . '.' . (int)$data['limit'], $product_data);
+		}
+
+		return $product_data;
+	}
 	public function getBestSellerProducts($data = array()){
       $customer_group_id = $this->config->get('config_customer_group_id');    
       $product_data = $this->cache->get('product.bestseller.cat_id.' . $data['filter_category_id'] . '.' . (int)$this->config->get('config_language_id') . '.' . (int)$this->config->get('config_store_id'). '.' . $customer_group_id . '.' . (int)$data['limit']);

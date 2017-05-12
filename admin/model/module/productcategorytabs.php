@@ -14,41 +14,8 @@ class ModelModuleProductcategorytabs extends Model {
 			$sql .= " AND pd.name LIKE '" . $this->db->escape($data['filter_name']) . "%'";
 		}
 
-		if (!empty($data['filter_model'])) {
-			$sql .= " AND p.model LIKE '" . $this->db->escape($data['filter_model']) . "%'";
-		}
-
-		if (isset($data['filter_price']) && !is_null($data['filter_price'])) {
-			$sql .= " AND p.price LIKE '" . $this->db->escape($data['filter_price']) . "%'";
-		}
-
-		if (isset($data['filter_quantity']) && !is_null($data['filter_quantity'])) {
-			$sql .= " AND p.quantity = '" . (int)$data['filter_quantity'] . "'";
-		}
-
-		if (isset($data['filter_status']) && !is_null($data['filter_status'])) {
-			$sql .= " AND p.status = '" . (int)$data['filter_status'] . "'";
-		}
-
-
-    if (!empty($data['filter_category'])) {
-			if (!empty($data['filter_sub_category'])) {
-				$implode_data = array();
-				
-				$implode_data[] = "category_id = '" . (int)$data['filter_category'] . "'";
-				
-				$this->load->model('catalog/category');
-				
-				$categories = $this->model_catalog_category->getCategories($data['filter_category']);
-				
-				foreach ($categories as $category) {
-					$implode_data[] = "p2c.category_id = '" . (int)$category['category_id'] . "'";
-				}
-				
-				$sql .= " AND (" . implode(' OR ', $implode_data) . ")";			
-			} else {
-				$sql .= " AND p2c.category_id = '" . (int)$data['filter_category'] . "'";
-			}
+		if (!empty($data['filter_category'])) {
+			$sql .= " AND p2c.category_id = '" . (int)$data['filter_category'] . "'";
 		}
             
 		$sql .= " GROUP BY p.product_id";

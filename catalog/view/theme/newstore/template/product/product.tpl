@@ -1,11 +1,20 @@
 <?php echo $header; ?>
 <div itemscope itemtype="http://schema.org/Product" class="container">
-	<ul class="breadcrumb" itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+	<ul class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
 		<?php foreach ($breadcrumbs as $i=> $breadcrumb) { ?>
 			<?php if($i+1<count($breadcrumbs)){ ?>
-				<li><a itemprop="url" href="<?php echo $breadcrumb['href']; ?>"><span itemprop="title"><?php echo $breadcrumb['text']; ?></span></a></li>
+				<li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+					<a itemprop="item" href="<?php echo $breadcrumb['href']; ?>">
+					  <span itemprop="name"><?php echo $breadcrumb['text']; ?></span>
+					</a>
+					<meta itemprop="position" content="<?php echo $i+1; ?>" />
+				  </li>
 			<?php } else { ?>
-				<li><?php echo $breadcrumb['text']; ?></li>
+				<li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+				<link itemprop="item" href="<?php echo $breadcrumb['href']; ?>">
+				<span itemprop="name"><?php echo $breadcrumb['text']; ?></span>
+				<meta itemprop="position" content="<?php echo $i+1; ?>" />
+				</li>
 			<?php } ?>
 		<?php } ?>
 	</ul>
@@ -89,7 +98,7 @@
 								<?php } ?>
 							</div>	
 							<a class="main-image thumbnail zoom-magnify" href="<?php echo $popup; ?>" title="<?php echo $heading_title; ?>">
-								<img class="img" data-magnify-src="<?php echo $popup; ?>" src="<?php echo $thumb; ?>" src="<?php echo $thumb; ?>" title="<?php echo $heading_title; ?>" alt="<?php echo $heading_title; ?>" /></a>
+								<img class="img-responsive" data-magnify-src="<?php echo $popup; ?>" src="<?php echo $thumb; ?>" src="<?php echo $thumb; ?>" title="<?php echo $heading_title; ?>" alt="<?php echo $heading_title; ?>" /></a>
 						</div>
 					<?php } ?>
 					<?php if ($images) { ?>
@@ -829,18 +838,22 @@ if (!$(".carousel_numb_featured<?php echo $gen_carousel_featured;?>").parents("#
 <script src="catalog/view/theme/newstore/js/jquery.magnify.js" type="text/javascript"></script>
 <link media="screen" href="catalog/view/theme/newstore/stylesheet/magnify.css" type="text/css" rel="stylesheet">
 <script type="text/javascript">
-$('.thumbnails a.zoom-magnify img').magnify({
-	speed: 200,
-	src: $('.thumbnails a.zoom-magnify').attr('href')
-});		
+if($(document).width()>767){
+	$('.thumbnails a.zoom-magnify img').magnify({
+		speed: 200,
+		src: $('.thumbnails a.zoom-magnify').attr('href')
+	});
+}
 $('.image-additional .item img').hover(function(){	
 	$('.main-image img').attr('src', $(this).parent().attr('rel'));
 	$('.main-image').attr('href', $(this).parent().attr('href'));
 	$('.main-image img').attr('data-magnify-src',$(this).parent().attr('data-magnify-src'));
-	$('.thumbnails a.zoom-magnify img').magnify({
-		speed: 200,
-		src: $(this).parent().attr('data-magnify-src')
-	});	
+	if($(document).width()>767){
+		$('.thumbnails a.zoom-magnify img').magnify({
+			speed: 200,
+			src: $(this).parent().attr('data-magnify-src')
+		});	
+	}
 	return false;
  });	
  var owladd = $('.thumbnails .image-additional');

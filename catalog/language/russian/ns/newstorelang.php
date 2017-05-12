@@ -5,7 +5,7 @@ $_['text_total_checkout']  						= 'Сумма вашего заказа:';
 $_['text_contact_footer']  						= 'Наши Контакты';
 $_['text_social_link']  						= 'Социальные сети';
 $_['text_payments_footer']  					= 'Безопасные платежи';
-$_['text_items_my']  							= '<span class="products"><strong>В корзине</strong> <b>%s</b></span><span class="prices"><b>%s</b></span>';
+$_['text_items_my']  							= '<span class="products">Tоваров <b>%s</b></span><span class="prices"><b>%s</b></span>';
 $_['text_reviews_title'] 						= 'отзывов';
 $_['text_search_everywhere'] 					= 'Везде';
 $_['text_find_cheap'] 							= 'Нашли дешевле?';
@@ -59,7 +59,7 @@ $_['hours'] 									= 'Часов';
 $_['minutes'] 									= 'минут';
 $_['sec'] 										= 'сек';
 
-$_['text_login']                   				= 'Войти';
+$_['text_login']                   				= 'Авторизация';
 $_['text_register']                				= 'Регистрация';
 $_['text_forgotten']               				= 'Забыли пароль?';
 

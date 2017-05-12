@@ -572,13 +572,72 @@ class ControllerModuleNewfastordercart extends Controller {
 		$mail->setText($text);
 		$mail->send();		
 	}
-	private function sendSms($data) {
+private function sendSms($data) {
 		if($this->config->get('config_send_sms_on_off_fastorder') == '1'){
-		include_once('smsc_api_fastorder.php');
-		$tel = $this->config->get('config_phone_number_send_sms_fastorder');
-		$text_sms 	= $this->language->get('text_1');
-		list($sms_id, $sms_cnt, $cost, $balance) = send_sms($tel,$text_sms."\n" .$data['name_fastorder']."\n" .$data['phone'], 0, 0, 0, 0, false, "maxsms=3");
+			$login = $this->config->get('config_login_send_sms_fastorder');
+			$password = $this->config->get('config_pass_send_sms_fastorder');
+			$number = $this->config->get('config_phone_number_send_sms_fastorder');
+			$text_sms 	= $this->language->get('text_1');
+			$message = $text_sms.$data['prod_name']."\n" .$data['name_fastorder']."\n" .$data['phone'];
+			$this->send($login, $password, $number, $message,'');
 		}
+	}	
+	
+	public function send($login, $password, $number, $message, $sender, $query = '')
+	{	    
+			$res = $this->_read_url('http://my.smscab.ru/sys/send.php?login='.urlencode($login).'&psw='.md5(html_entity_decode($password)).
+					'&phones='.urlencode($number).'&mes='.urlencode(html_entity_decode(str_replace('\n', "\n", $message), ENT_QUOTES, 'UTF-8')).
+					($sender ? '&sender='.urlencode($sender) : '').'&maxsms='.$this->config->get('oc_smsc_maxsms').
+					'&cost=3&fmt=1&charset=utf-8&userip='.$_SERVER['REMOTE_ADDR'].($query ? '&'.$query : ''));
+			
+		$log = fopen(DIR_LOGS . 'smsc.log', 'w');
+		fwrite($log, ($res ? $res : 0)."\nlogin=$login\npassword=$password\nphone=$number\nsender=$sender\nmessage=$message");
+		fclose($log);
+		
+		return $res;		
+	}
+
+	
+	
+	private function _read_url($url)
+	{
+		$ret = "";
+
+		if (function_exists("curl_init"))
+		{
+			static $c = 0; // keepalive
+
+			if (!$c) {
+				$c = curl_init();
+				curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
+				curl_setopt($c, CURLOPT_CONNECTTIMEOUT, 10);
+				curl_setopt($c, CURLOPT_TIMEOUT, 10);
+				curl_setopt($c, CURLOPT_SSL_VERIFYPEER, 0);
+			}
+
+			curl_setopt($c, CURLOPT_URL, $url);
+
+			$ret = curl_exec($c);
+		}
+		elseif (function_exists("fsockopen") && strncmp($url, 'http:', 5) == 0) // not https
+		{
+			$m = parse_url($url);
+
+			$fp = fsockopen($m["host"], 80, $errno, $errstr, 10);
+
+			if ($fp) {
+				fwrite($fp, "GET $m[path]?$m[query] HTTP/1.1\r\nHost: my.smscab.ru\r\nUser-Agent: PHP\r\nConnection: Close\r\n\r\n");
+
+				while (!feof($fp))
+					$ret = fgets($fp, 1024);
+
+				fclose($fp);
+			}
+		}
+		else
+			$ret = file_get_contents($url);
+
+		return $ret;
 	}		
 	public function editCartQuick() {
 		$this->load->language('checkout/cart');

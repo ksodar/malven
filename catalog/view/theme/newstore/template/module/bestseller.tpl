@@ -113,8 +113,27 @@
 		<?php if ($show_options) { ?>
 			<div id="option_bestseller_<?php echo $product['product_id']; ?>" class="option bestseller-opt">
 				<?php foreach ($product['options'] as $key => $option) { ?>
-				
-			<?php if ($option['type'] == 'select' || $option['type'] == 'radio') { ?>
+					<?php if ($option['type'] == 'select'){ ?>
+						<div class="form-group">
+							<label class="control-label" for="input-option<?php echo $option['product_option_id']; ?>">
+								<?php if ($option['required']) { ?><i class="fa fa-exclamation-triangle required" data-toggle="tooltip" data-placement="left" title="<?php echo $required_text_option; ?>"></i><?php } ?>
+								<?php echo $option['name']; ?>
+							</label>
+							<div id="input-option-bestseller<?php echo $option['product_option_id']; ?>">
+								<select onchange="recalc_quantity(<?php echo $product['product_id'];?>,<?php echo $product['minimum']; ?>,<?php echo $product['price_no_format'];?>,'<?php echo $product['special_no_format'];?>','.carousel_numb_bestseller<?php echo $gen_carousel_bestseller;?>','bestseller');" name="option[<?php echo $option['product_option_id']; ?>]" id="input-value-<?php echo $option['product_option_id']; ?>_bestseller" class="form-control">
+									<option value=""><?php echo $text_select; ?></option>
+									<?php foreach ($option['product_option_value'] as $option_value) { ?>
+									<option data-option-prefix="<?php echo $option_value['price_prefix']; ?>" data-option-price="<?php echo $option_value['price_value']; ?>" value="<?php echo $option_value['product_option_value_id']; ?>"><?php echo $option_value['name']; ?>
+									<?php if ($option_value['price']) { ?>
+									(<?php echo $option_value['price_prefix']; ?><?php echo $option_value['price']; ?>)
+									<?php } ?>
+									</option>
+									<?php } ?>
+								</select>
+						  </div>
+						</div>
+					<?php } ?>
+			<?php if ($option['type'] == 'radio') { ?>
             <div class="form-group">
 				<label class="control-label" for="input-option<?php echo $option['product_option_id']; ?>">
 					<?php if ($option['required']) { ?><i class="fa fa-exclamation-triangle required" data-toggle="tooltip" data-placement="left" title="<?php echo $required_text_option; ?>"></i><?php } ?>
@@ -123,7 +142,7 @@
               <div id="input-option-bestseller<?php echo $option['product_option_id']; ?>">
                 <?php foreach ($option['product_option_value'] as $option_value) { ?>
                 <div class="radio-checbox-options">
-					<input type="radio" name="option[<?php echo $option['product_option_id']; ?>]" value="<?php echo $option_value['product_option_value_id']; ?>" id="input-value-<?php echo $option['product_option_id']; ?>_<?php echo $option_value['product_option_value_id']; ?>_bestseller" />
+					<input data-option-prefix="<?php echo $option_value['price_prefix']; ?>" data-option-price="<?php echo $option_value['price_value']; ?>" onchange="recalc_quantity(<?php echo $product['product_id'];?>,<?php echo $product['minimum']; ?>,<?php echo $product['price_no_format'];?>,'<?php echo $product['special_no_format'];?>','.carousel_numb_bestseller<?php echo $gen_carousel_bestseller;?>','bestseller');" type="radio" name="option[<?php echo $option['product_option_id']; ?>]" value="<?php echo $option_value['product_option_value_id']; ?>" id="input-value-<?php echo $option['product_option_id']; ?>_<?php echo $option_value['product_option_value_id']; ?>_bestseller" />
 					<label for="input-value-<?php echo $option['product_option_id']; ?>_<?php echo $option_value['product_option_value_id']; ?>_bestseller">
 						<span class="option-name"><?php echo $option_value['name']; ?></span>
 						<?php if ($option_value['price']) { ?>
@@ -145,7 +164,7 @@
               <div id="input-option-bestseller<?php echo $option['product_option_id']; ?>">
                 <?php foreach ($option['product_option_value'] as $option_value) { ?>
                 <div class="radio-checbox-options">
-                  <input type="checkbox" name="option[<?php echo $option['product_option_id']; ?>][]" value="<?php echo $option_value['product_option_value_id']; ?>" id="input-value-<?php echo $option['product_option_id']; ?>_<?php echo $option_value['product_option_value_id']; ?>_bestseller" />
+                  <input data-option-prefix="<?php echo $option_value['price_prefix']; ?>" data-option-price="<?php echo $option_value['price_value']; ?>" onchange="recalc_quantity(<?php echo $product['product_id'];?>,<?php echo $product['minimum']; ?>,<?php echo $product['price_no_format'];?>,'<?php echo $product['special_no_format'];?>','.carousel_numb_bestseller<?php echo $gen_carousel_bestseller;?>','bestseller');" type="checkbox" name="option[<?php echo $option['product_option_id']; ?>][]" value="<?php echo $option_value['product_option_value_id']; ?>" id="input-value-<?php echo $option['product_option_id']; ?>_<?php echo $option_value['product_option_value_id']; ?>_bestseller" />
 					<label for="input-value-<?php echo $option['product_option_id']; ?>_<?php echo $option_value['product_option_value_id']; ?>_bestseller">
                     <span class="option-name"><?php echo $option_value['name']; ?></span>
 						<?php if ($option_value['price']) { ?>
@@ -171,7 +190,7 @@
 					<?php foreach ($option['product_option_value'] as $option_value) { ?>
 					<div class="image-radio">
 					  <label>
-						<input type="radio" name="option[<?php echo $option['product_option_id']; ?>]" value="<?php echo $option_value['product_option_value_id']; ?>" id="input-value-<?php echo $option['product_option_id']; ?>_<?php echo $option_value['product_option_value_id']; ?>_bestseller" />
+						<input data-option-prefix="<?php echo $option_value['price_prefix']; ?>" data-option-price="<?php echo $option_value['price_value']; ?>" onchange="recalc_quantity(<?php echo $product['product_id'];?>,<?php echo $product['minimum']; ?>,<?php echo $product['price_no_format'];?>,'<?php echo $product['special_no_format'];?>','.carousel_numb_bestseller<?php echo $gen_carousel_bestseller;?>','bestseller');" type="radio" name="option[<?php echo $option['product_option_id']; ?>]" value="<?php echo $option_value['product_option_value_id']; ?>" id="input-value-<?php echo $option['product_option_id']; ?>_<?php echo $option_value['product_option_value_id']; ?>_bestseller" />
 						<span for="input-value-<?php echo $option['product_option_id']; ?>_<?php echo $option_value['product_option_value_id']; ?>_bestseller" class="color-option" data-toggle="tooltip" title="<?php echo $option_value['name'] . ($option_value['price'] ? ' ' . $option_value['price_prefix'] . $option_value['price'] : ''); ?>" style="background-color:<?php echo $option_value['color']?>"></span>						
 					  </label>
 					</div>
@@ -190,7 +209,7 @@
 					<?php foreach ($option['product_option_value'] as $option_value) { ?>
 					<div class="image-radio">
 					  <label>
-						<input type="radio" name="option[<?php echo $option['product_option_id']; ?>]" value="<?php echo $option_value['product_option_value_id']; ?>" id="input-value-<?php echo $option['product_option_id']; ?>_<?php echo $option_value['product_option_value_id']; ?>_bestseller" />
+						<input data-option-prefix="<?php echo $option_value['price_prefix']; ?>" data-option-price="<?php echo $option_value['price_value']; ?>" onchange="recalc_quantity(<?php echo $product['product_id'];?>,<?php echo $product['minimum']; ?>,<?php echo $product['price_no_format'];?>,'<?php echo $product['special_no_format'];?>','.carousel_numb_bestseller<?php echo $gen_carousel_bestseller;?>','bestseller');" type="radio" name="option[<?php echo $option['product_option_id']; ?>]" value="<?php echo $option_value['product_option_value_id']; ?>" id="input-value-<?php echo $option['product_option_id']; ?>_<?php echo $option_value['product_option_value_id']; ?>_bestseller" />
 						<img for="input-value-<?php echo $option['product_option_id']; ?>_<?php echo $option_value['product_option_value_id']; ?>_bestseller" src="<?php echo $option_value['image']; ?>" alt="<?php echo $option_value['name'] . ($option_value['price'] ? ' ' . $option_value['price_prefix'] . $option_value['price'] : ''); ?>" class="img-thumbnail" data-toggle="tooltip" title="<?php echo $option_value['name'] . ($option_value['price'] ? ' ' . $option_value['price_prefix'] . $option_value['price'] : ''); ?>" /> 						
 					  </label>
 					</div>
@@ -230,16 +249,41 @@
 		<meta itemprop="price" content="<?php echo rtrim(preg_replace("/[^0-9\.]/", "", ($product['special'] ? $product['special'] : $product['price'])), '.'); ?>">
 		<meta itemprop="priceCurrency" content="<?php echo $product['currency'] ?>">
 		<link itemprop="availability" href="http://schema.org/<?php echo ($product['availability'] ? "InStock" : "OutOfStock") ?>" />
-          <?php if (!$product['special']) { ?>
-          <?php echo $product['price']; ?>
-          <?php } else { ?>
-          <span class="price-old"><?php echo $product['price']; ?></span> <span class="price-new"><?php echo $product['special']; ?></span>
-          <?php } ?>
+           <?php if (!$product['special']) { ?>
+			  <span class="price_no_format_<?php echo $product['product_id'];?>"><?php echo $product['price']; ?></span>
+			  <?php } else { ?>
+			  <span class="price-old"><span class="price_no_format_<?php echo $product['product_id'];?>"><?php echo $product['price']; ?></span></span> <span class="price-new"><span class="special_no_format_<?php echo $product['product_id'];?>"><?php echo $product['special']; ?></span></span>
+			<?php } ?>
           <?php if ($product['tax']) { ?>
           <span class="price-tax"><?php echo $text_tax; ?> <?php echo $product['tax']; ?></span>
           <?php } ?>
         </div>
         <?php } ?>
+		<?php if(isset($config_additional_settings_newstore['quantity_btn_module']) && ($config_additional_settings_newstore['quantity_btn_module'] =='1')){?>
+		<div class="quantity_plus_minus">
+			<div class="quantity_cont">
+				<div class="input-group">
+					<span class="input-group-btn">
+						<button class="btn btn-quantity-minus" onclick="btnminus_cat_price_bestseller<?php echo $product['product_id'];?>('<?php echo $product['minimum']; ?>');" type="button">-</button>
+					</span>
+						<input id="input_quantity_mod_bestseller<?php echo $product['product_id'];?>" class="form-control input-number-quantity<?php echo $product['product_id'];?>" name="quantity" onkeyup="validate_quantity(this,'<?php echo $product['minimum']; ?>')" oninput="recalc_quantity(<?php echo $product['product_id'];?>,<?php echo $product['minimum']; ?>, <?php echo $product['price_no_format'];?>,'<?php echo $product['special_no_format'];?>','.carousel_numb_bestseller<?php echo $gen_carousel_bestseller;?>','bestseller');" size="2" value="<?php echo $product['minimum']; ?>">
+					<span class="input-group-btn">
+						<button class="btn btn-quantity-plus" onclick="btnplus_cat_price_bestseller<?php echo $product['product_id'];?>();" type="button" >+</button>
+					</span>
+				</div>	
+			</div>
+		</div>
+		<script type="text/javascript">
+				function btnminus_cat_price_bestseller<?php echo $product['product_id'];?>(a){
+					document.getElementById("input_quantity_mod_bestseller<?php echo $product['product_id'];?>").value>a?document.getElementById("input_quantity_mod_bestseller<?php echo $product['product_id'];?>").value--:document.getElementById("input_quantity_mod_bestseller<?php echo $product['product_id'];?>").value=a;										
+					recalc_quantity(<?php echo $product['product_id'];?>,<?php echo $product['minimum']; ?>,<?php echo $product['price_no_format'];?>,'<?php echo $product['special_no_format'];?>','.carousel_numb_bestseller<?php echo $gen_carousel_bestseller;?>','bestseller');						
+				}
+				function btnplus_cat_price_bestseller<?php echo $product['product_id'];?>(){
+					document.getElementById("input_quantity_mod_bestseller<?php echo $product['product_id'];?>").value++;
+					recalc_quantity(<?php echo $product['product_id'];?>,<?php echo $product['minimum']; ?>,<?php echo $product['price_no_format'];?>,'<?php echo $product['special_no_format'];?>','.carousel_numb_bestseller<?php echo $gen_carousel_bestseller;?>','bestseller');					
+				};																				
+		</script>
+		<?php } ?>
 		<div class="actions">
 			<?php if($ns_on_off_bestseller_wishlist !='0') { ?>
 				<div class="wishlist"><button class="btn btn-wishlist" type="button" data-toggle="tooltip" title="<?php echo $button_wishlist; ?>" onclick="wishlist.add('<?php echo $product['product_id']; ?>');"><i class="fa fa-heart"></i></button></div>
@@ -247,7 +291,7 @@
 			<?php if (($product['product_quantity'] <= 0) and $disable_cart_button){ ?>
 				<div class="cart"><button class="btn btn-general" type="button" disabled><?php if($change_text_cart_button_out_of_stock ==1) { ?><span><?php echo $disable_cart_button_text; ?></span><?php } else { ?><i class="fa fa-shopping-basket"></i> <span><?php echo $button_cart; ?></span><?php } ?></button></div>
 			<?php } else { ?>
-				<div class="cart"><button class="btn btn-general" type="button" onclick="cart.add('<?php echo $product['product_id']; ?>','bestseller');"><?php if($change_text_cart_button_out_of_stock ==1 && $product['product_quantity'] <= 0) { ?><span><?php echo $disable_cart_button_text; ?></span><?php } else { ?><i class="fa fa-shopping-basket"></i> <span><?php echo $button_cart; ?></span><?php } ?></button></div>
+				<div class="cart"><button class="btn btn-general" type="button" onclick="cart.add('<?php echo $product['product_id']; ?>','bestseller', get_cart_quantity('<?php echo $product['product_id']; ?>','.carousel_numb_bestseller<?php echo $gen_carousel_bestseller;?>'));"><?php if($change_text_cart_button_out_of_stock ==1 && $product['product_quantity'] <= 0) { ?><span><?php echo $disable_cart_button_text; ?></span><?php } else { ?><i class="fa fa-shopping-basket"></i> <span><?php echo $button_cart; ?></span><?php } ?></button></div>
 			<?php } ?>		
 			<?php if($ns_on_off_bestseller_compare !='0') { ?>
 				<div class="compare"><button class="btn btn-compare" type="button" data-toggle="tooltip" title="<?php echo $button_compare; ?>" onclick="compare.add('<?php echo $product['product_id']; ?>');"><i class="fa fa-exchange"></i></button></div>

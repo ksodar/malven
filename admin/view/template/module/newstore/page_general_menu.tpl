@@ -349,7 +349,7 @@ $('#autocategoryadd').bind('click',function() {
 						<div class="form-group">
 							<label class="col-sm-4 control-label"><?php echo $ns_text_product_width; ?></label>
 							<div class="col-sm-6">
-								<input type="text" name="config_menu_item[<?php echo $menu_item_row; ?>][category_img_width]" value="<?=isset($config_menu_item['category_img_height'])?$config_menu_item['category_img_height']:50?>" placeholder="<?php echo $ns_text_product_width; ?>" class="form-control" />						 
+								<input type="text" name="config_menu_item[<?php echo $menu_item_row; ?>][category_img_width]" value="<?=isset($config_menu_item['category_img_width'])?$config_menu_item['category_img_width']:50?>" placeholder="<?php echo $ns_text_product_width; ?>" class="form-control" />						 
 							</div>
 						</div>		
 						<div class="form-group">

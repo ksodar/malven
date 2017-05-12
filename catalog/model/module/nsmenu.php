@@ -1,5 +1,14 @@
 <?php
 class ModelModuleNsmenu extends Model {
+	private $lang_id;
+    
+    public function __construct($registry) {
+		parent::__construct($registry);
+        $this->lang_id = $this->lang_id();
+    }
+    private function lang_id() {
+        return (int)$this->config->get('config_language_id');
+    }
 	public function MegaMenuTypeLink($data){
 		$this->load->model('tool/image');
 		$result_menu_link = array();
@@ -8,12 +17,12 @@ class ModelModuleNsmenu extends Model {
 		} else {
 			$thumb = "";
 		}
-		$lang_id = $this->config->get('config_language_id');
+		
 		$type_link_data['result_menu_link'] = array(
 			'type' 				=> "link",
 			'thumb' 			=> $thumb,
 			'children' 			=> false,
-			'href' 				=> (trim($data['link'][$lang_id]))?$data['link'][$lang_id]:"javascript:void(0);",
+			'href' 				=> (trim($data['link'][$this->lang_id]))?$data['link'][$this->lang_id]:"javascript:void(0);",
 			'name' 				=> $data['namemenu'],
 			'sticker_parent' 	=> $data['sticker_parent'],
 			'additional_menu' 	=> $data['additional_menu'],
@@ -55,13 +64,13 @@ class ModelModuleNsmenu extends Model {
 			array_multisort($sort_order, SORT_ASC, $result['result_information']);
 		}
 		
-		$lang_id = $this->config->get('config_language_id');
+		
 		$type_link_data['result_menu_information'] = array(
 			'type' 				=> "information",
 			'thumb' 			=> $thumb,
 			'children' 			=> $result['result_information'],
 			'add_html' 			=> $add_html,
-			'href' 				=> (trim($data['link'][$lang_id]))?$data['link'][$lang_id]:"javascript:void(0);",
+			'href' 				=> (trim($data['link'][$this->lang_id]))?$data['link'][$this->lang_id]:"javascript:void(0);",
 			'name' 				=> $data['namemenu'],
 			'sticker_parent' 	=> $data['sticker_parent'],
 			'additional_menu' 	=> $data['additional_menu'],
@@ -106,13 +115,13 @@ class ModelModuleNsmenu extends Model {
 				}
 			}
 		}
-		$lang_id = $this->config->get('config_language_id');
+		
 		$type_link_data['result_menu_manufacturer'] = array(
 			'type' 				=> "manufacturer",
 			'thumb' 			=> $thumb_menu,
 			'children' 			=> $data['result_manufacturer'],
 			'add_html' 			=> $add_html,
-			'href' 				=> (trim($data['link'][$lang_id]))?$data['link'][$lang_id]:"javascript:void(0);",
+			'href' 				=> (trim($data['link'][$this->lang_id]))?$data['link'][$this->lang_id]:"javascript:void(0);",
 			'name' 				=> $data['namemenu'],
 			'sticker_parent' 	=> $data['sticker_parent'],
 			'additional_menu' 	=> $data['additional_menu'],
@@ -173,11 +182,11 @@ class ModelModuleNsmenu extends Model {
 				}	
 			}
 		}	
-		$lang_id = $this->config->get('config_language_id');
+		
 		$type_link_data['result_menu_product'] = array(
 			'type' 				=> "product",
 			'children' 			=> $data['result_product'],
-			'href' 				=> (trim($data['link'][$lang_id]))?$data['link'][$lang_id]:"javascript:void(0);",
+			'href' 				=> (trim($data['link'][$this->lang_id]))?$data['link'][$this->lang_id]:"javascript:void(0);",
 			'name' 				=> $data['namemenu'],
 			'sticker_parent' 	=> $data['sticker_parent'],
 			'additional_menu' 	=> $data['additional_menu'],
@@ -188,17 +197,31 @@ class ModelModuleNsmenu extends Model {
 					
 		return $type_link_data['result_menu_product'];
 	}
-    public function getCategoryPath($category_id){
-		$query = $this->db->query("SELECT path_id FROM " . DB_PREFIX . "category_path WHERE category_id='". (int)$category_id ."' ORDER BY LEVEL");						
-		if($query->rows){
-			$result=array();
-			foreach($query->rows as $row){ 	
-				$result[]=$row['path_id'];
-			}
-			return $result;
-		} else {
-			return false;
+
+	public function getCategoryPath($category_id){
+		$path = '';
+		$category = $this->db->query("SELECT c.`category_id`,c.`parent_id` FROM " . DB_PREFIX . "category c WHERE c.`category_id` = " .(int)$category_id."");
+		if($category->row['parent_id'] != 0){
+			$path .= $this->getCategoryPath($category->row['parent_id']) . '_';
 		}
+		$path .= $category->row['category_id'];
+ 
+		return $path;
+	}
+	public function getCategory($category_id) {
+		$query = $this->db->query("SELECT c.`category_id`,c.`image`, cd2.`name` FROM " . DB_PREFIX . "category c 
+		LEFT JOIN " . DB_PREFIX . "category_description cd2 ON (c.`category_id` = cd2.`category_id`) WHERE c.`category_id` = " . (int)$category_id . " AND cd2.language_id = " . $this->lang_id . "");
+		return $query->row;
+	}
+	public function getCategories($parent_id = 0) {
+		$query = $this->db->query("SELECT c.`category_id`, cd.`name` FROM " . DB_PREFIX . "category c 
+		LEFT JOIN " . DB_PREFIX . "category_description cd ON (c.category_id = cd.category_id) 
+		LEFT JOIN " . DB_PREFIX . "category_to_store c2s ON (c.category_id = c2s.category_id) 
+		WHERE c.parent_id = '" . (int)$parent_id . "' 
+		AND cd.language_id = '" . $this->lang_id . "' 
+		AND c2s.store_id = '" . (int)$this->config->get('config_store_id') . "'  
+		AND c.status = '1'");
+		return $query->rows;
 	}
 	public function MegaMenuTypeCategory($data){
 		$this->load->model('catalog/category');
@@ -232,9 +255,9 @@ class ModelModuleNsmenu extends Model {
 		}
 		
 		if(is_array($data_categories_list)){
-			$category_list=array();
+			$category_list = array();
 			foreach($data_categories_list as $cat){
-				$category = $this->model_catalog_category->getCategory($cat);
+				$category = $this->getCategory($cat);
 				if($category){
 					$category_list[]=$category;
 				}
@@ -254,28 +277,23 @@ class ModelModuleNsmenu extends Model {
 
 					$children_data=array();
 					if($data['show_sub_category']){
-						$children = $this->model_catalog_category->getCategories($category['category_id']);
+						$children = $this->getCategories($category['category_id']);
 						if($children){
 							foreach ($children as $child) {
+								
 								$child_4level_data=array();
-								$child_4level = $this->model_catalog_category->getCategories($child['category_id']);
+								$child_4level = $this->getCategories($child['category_id']);
 								if($child_4level){
 									foreach ($child_4level as $c4level) {
 										$path_4level = $this->getCategoryPath($c4level['category_id']);		
-										if($path_4level)
-										$path_4level = implode("_" , $path_4level);
-
+										
 										$child_4level_data[] = array(
 											'name'  => $c4level['name'],
 											'href'  => $this->url->link('product/category', 'path=' . $path_4level)
 										);
 									}
-								}
-
-
+								}	
 								$path=$this->getCategoryPath($child['category_id']);		
-								if($path)
-								$path=implode("_",$path);
 								
 								if(!empty($data['sticker'][$child['category_id']])) {
 									$sticker_category = $data['sticker'][$child['category_id']];
@@ -295,9 +313,7 @@ class ModelModuleNsmenu extends Model {
 					}
 					
 					$path = $this->getCategoryPath($category['category_id']);
-									
-					if($path)
-					$path=implode("_",$path);
+
 					if(isset($data['sticker'][$category['category_id']])){
 						$sticker_category = $data['sticker'][$category['category_id']];
 					} else {
@@ -314,13 +330,13 @@ class ModelModuleNsmenu extends Model {
 			}
 		}
 		
-		$lang_id = $this->config->get('config_language_id');
+		
 		$result_menu_category = array();
 		$type_link_data['result_menu_category'] = array(
 			'type' 				=> "category",
 			'children' 			=> $result_category,
 			'subtype' 			=> $data['variant_category'],
-			'href' 				=> (trim($data['link'][$lang_id]))?$data['link'][$lang_id]:"javascript:void(0);",
+			'href' 				=> (trim($data['link'][$this->lang_id]))?$data['link'][$this->lang_id]:"javascript:void(0);",
 			'name' 				=> $data['namemenu'],
 			'sticker_parent' 	=> $data['sticker_parent'],
 			'additional_menu' 	=> $data['additional_menu'],
@@ -339,11 +355,11 @@ class ModelModuleNsmenu extends Model {
 		} else {
 			$thumb_menu = "";
 		}
-		$lang_id = $this->config->get('config_language_id');
+		
 		$type_link_data['result_menu_html'] = array(
 			'type' 				=> "html",
 			'children'			=> true,
-			'href' 				=> (trim($data['link'][$lang_id]))?$data['link'][$lang_id]:"javascript:void(0);",
+			'href' 				=> (trim($data['link'][$this->lang_id]))?$data['link'][$this->lang_id]:"javascript:void(0);",
 			'name' 				=> $data['namemenu'],
 			'sticker_parent' 	=> $data['sticker_parent'],
 			'additional_menu' 	=> $data['additional_menu'],
